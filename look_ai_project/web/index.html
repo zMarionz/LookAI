@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Look AI – Virtual Try-On</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    input { margin: 10px; }
+    img { margin-top: 20px; max-width: 100%; height: auto; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Look AI – Probare Virtuală</h1>
+  <form id="upload-form">
+    <label>Imagine utilizator:</label><br>
+    <input type="file" id="user" accept="image/*" required><br>
+    <label>Imagine haină:</label><br>
+    <input type="file" id="cloth" accept="image/*" required><br>
+    <button type="submit">Încearcă</button>
+  </form>
+
+  <div id="result-container">
+    <h3>Rezultat:</h3>
+    <img id="result-img" src="" alt="Rezultat try-on" hidden>
+  </div>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userFile = document.getElementById('user').files[0];
+      const clothFile = document.getElementById('cloth').files[0];
+
+      const formData = new FormData();
+      formData.append('user_image', userFile);
+      formData.append('cloth_image', clothFile);
+
+      const response = await fetch('/tryon/', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const imgUrl = URL.createObjectURL(blob);
+        const img = document.getElementById('result-img');
+        img.src = imgUrl;
+        img.hidden = false;
+      } else {
+        alert('Eroare la procesare.');
+      }
+    });
+  </script>
+</body>
+</html>
